@@ -1,0 +1,13 @@
+import { Body, Controller, Post } from '@nestjs/common';
+
+import { FilesService } from './files.service';
+
+@Controller('files')
+export class FilesController {
+  constructor(private readonly filesService: FilesService) { }
+
+  // @Post()
+  // create(
+  //   @Body() createFileDto:
+  // )
+}
