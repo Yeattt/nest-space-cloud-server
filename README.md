@@ -7,7 +7,7 @@
 
 ## STACK:
 - NestJS
-- TypeORM
+- Prisma
 - MySQL
 - JOI for .env vars validations
 - Docker
