@@ -16,4 +16,5 @@
 1. Install the npm dependencies: ```npm i```.
 2. Replace .env.template to .env and set the env variables.
 3. Setup the database with docker: ```docker compose up -d```.
+4. Run the prisma migrations: ```npx prisma migrate dev --name (name)```
 4. Setup the application: ```npm run start:dev```
