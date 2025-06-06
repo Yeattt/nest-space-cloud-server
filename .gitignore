@@ -2,6 +2,8 @@
 /dist
 /node_modules
 /build
+/mysql
+/generated
 
 # Logs
 logs
