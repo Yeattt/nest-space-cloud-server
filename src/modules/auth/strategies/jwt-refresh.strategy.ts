@@ -5,11 +5,12 @@ import { Request } from 'express';
 
 import { envs } from '../../../config';
 import { IJwtPayload } from '../interfaces';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(
-
+    private readonly authService: AuthService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,11 +19,14 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     });
   }
 
-  public validate(req: Request, payload: IJwtPayload) {
-    const refreshToken = req.get('Authorization')?.replace('Bearer', '');
+  public async validate(payload: IJwtPayload) {
+    const { id } = payload;
+
+    const user = await this.authService.validateUser(id);
+
     return {
-      ...payload,
-      refreshToken
-    }
+      user,
+      payload,
+    };
   };
 }

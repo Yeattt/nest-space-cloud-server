@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto';
+import { Auth, GetUser } from './decorators';
+import { User } from 'generated/prisma';
 
 @Controller('auth')
 export class AuthController {
@@ -21,8 +23,10 @@ export class AuthController {
     return this.authService.signIn(signUpDto);
   }
 
-  @Get('verify')
-  public verifyToken() {
-    return this.authService.verify
+  @Get('refresh-token/:rToken')
+  public refreshToken(
+    @Param('rToken') rToken: string,
+  ) {
+    return this.authService.refreshToken(rToken);
   }
 }

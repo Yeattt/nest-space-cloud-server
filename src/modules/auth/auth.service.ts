@@ -18,19 +18,25 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) { }
 
-
-  public async verifyToken(token: string) {
+  public async refreshToken(rToken: string) {
     try {
-      const { sub, iat, exp, ...user } = this.jwtService.verify(token, {
+      const { ...userFromToken } = this.jwtService.verify(rToken, {
         secret: envs.jwtSecret,
       });
 
-      const newToken: string = await this.signJWT(user);
+      const user: User | null = await this.validateUser(userFromToken.sub);
+
+      if (user?.refreshToken !== rToken) {
+        throw new UnauthorizedException('Invalid token');
+      };
+
+      const { accessToken, refreshToken } = await this.signJWT(user);
 
       return {
         ok: true,
         user,
-        token: newToken,
+        accessToken,
+        refreshToken,
       }
     } catch (error) {
       this.logger.error(error);
@@ -39,8 +45,14 @@ export class AuthService {
     }
   };
 
-  public async signJWT(payload: IJwtPayload) {
-    return this.jwtService.sign(payload);
+  private async signJWT(payload: IJwtPayload) {
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m', secret: envs.jwtSecret });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '24h', secret: envs.jwtSecret });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   };
 
   public async signUp(signUpDto: SignUpDto) {
@@ -56,13 +68,14 @@ export class AuthService {
 
       const { password, ...user } = newUser;
 
-      const jwt: string = await this.signJWT(user);
+      const { accessToken, refreshToken } = await this.signJWT(user);
 
       return {
         ok: true,
         message: 'User created successfully',
         user,
-        token: jwt
+        accessToken,
+        refreshToken,
       };
     } catch (error) {
       if (
@@ -91,12 +104,38 @@ export class AuthService {
       throw new UnauthorizedException(`Incorrect credentials, try again`);
     };
 
-    const jwt: string = await this.signJWT(user);
+    const { accessToken, refreshToken } = await this.signJWT(user);
+
+    user.refreshToken = refreshToken;
+
+    await this.prismaService.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken,
+      },
+    })
 
     return {
       ok: true,
       message: 'User logged successfully!',
-      token: jwt,
+      accessToken,
+      refreshToken,
     };
+  };
+
+  public async validateUser(id: string): Promise<User | null> {
+    const user: User | null = await this.prismaService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid token');
+    };
+
+    return user;
   };
 }
