@@ -13,6 +13,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Folder {
+  id String @id @default(uuid())
+  name String
+
+  files File[]
+}
+
 model User {
   id       String @id @default(uuid())
   name     String
@@ -29,5 +36,7 @@ model File {
   url         String
 
   userId String
+  folderId String
   user   User   @relation(fields: [userId], references: [id])
+  folder Folder @relation(fields: [folderId], references: [id])
 }
