@@ -5,7 +5,9 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-## STACK:
+# 🗃️ - Space Cloud Server
+
+## Stack:
 - NestJS
 - Prisma
 - MySQL
@@ -16,5 +18,5 @@
 1. Install the npm dependencies: ```npm i```.
 2. Replace .env.template to .env and set the env variables.
 3. Setup the database with docker: ```docker compose up -d```.
-4. Run the prisma migrations: ```npx prisma migrate dev --name (name)```
-4. Setup the application: ```npm run start:dev```
+4. Run the prisma migrations: ```npx prisma migrate dev --name (name)```.
+4. Setup the application: ```npm run start:dev```.
