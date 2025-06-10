@@ -38,7 +38,6 @@ model User {
 model File {
   id          String @id @default(uuid())
   name        String
-  description String
   url         String
 
   userId      String
