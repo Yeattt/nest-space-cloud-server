@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 
 import { DirectoriesService } from './directories.service';
 import { CreateDirectoryDto } from './dto';
+import { PaginationDto } from '../../common';
 
 @Controller('directories')
 export class DirectoriesController {
@@ -17,8 +18,10 @@ export class DirectoriesController {
   };
 
   @Get()
-  public findAll() {
-    return this.directoriesService.findAll();
+  public findAll(
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.directoriesService.findAll(paginationDto);
   };
 
   @Get(':id')
