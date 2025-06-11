@@ -63,6 +63,10 @@ export class FilesService {
     const files: File[] | null = await this.prismaService.file.findMany({
       skip: (currentPage - 1) * perPage,
       take: perPage,
+      include: {
+        directory: true,
+        user: true,
+      },
     });
 
 
