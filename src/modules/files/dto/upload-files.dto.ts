@@ -1,6 +1,6 @@
 import { IsString, IsUUID, Min } from 'class-validator';
 
-export class UploadFileDto {
+export class UploadFilesDto {
   @IsString()
   public url: string;
 
@@ -14,4 +14,7 @@ export class UploadFileDto {
 
   @IsUUID()
   public userId: string;
+
+  @IsUUID()
+  public directoryId: string;
 }

@@ -1,36 +1,46 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 import { FilesService } from './files.service';
-import { UploadFileDto } from './dto';
+import { UploadFilesDto } from './dto';
 import { PaginationDto } from '../../common';
+import { fileNamer } from './helpers';
 
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) { }
 
-  @Post()
-  create(
-    @Body() uploadFileDto: UploadFileDto,
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('files', 10, {
+    storage: diskStorage({
+      destination: '../../uploads',
+      filename: fileNamer,
+    })
+  }))
+  public upload(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body() uploadFilesDto: UploadFilesDto,
   ) {
-    return this.filesService.upload(uploadFileDto);
+    return this.filesService.upload(files, uploadFilesDto);
   };
 
   @Get()
-  findAll(
+  public findAll(
     @Query() paginationDto: PaginationDto,
   ) {
     return this.filesService.findAll(paginationDto);
-  }
+  };
 
   @Get(':id')
-  findOne(
+  public findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.filesService.findOne(id);
   };
 
   @Delete(':id')
-  delete(
+  public delete(
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.filesService.delete(id);
