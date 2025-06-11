@@ -14,8 +14,10 @@ datasource db {
 }
 
 model Directory {
-  id   String @id @default(uuid())
-  name String
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
   userId String
 
@@ -25,20 +27,24 @@ model Directory {
 }
 
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
   refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
 
   files       File[]
   directories Directory[]
 }
 
 model File {
-  id          String @id @default(uuid())
-  name        String
-  url         String
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  createdAt DateTime @default(now())
+  udpatedAt DateTime @default(now())
 
   userId      String
   directoryId String
