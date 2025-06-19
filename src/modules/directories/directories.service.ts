@@ -1,8 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Directory } from '@prisma/client';
+import { Directory, Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateDirectoryDto } from './dto';
+import { CreateDirectoryDto, UpdateDirectoryDto } from './dto';
 import { PaginationDto } from '../../common';
 
 @Injectable()
@@ -68,23 +68,49 @@ export class DirectoriesService {
     };
   };
 
+  public async update(id: string, updateDirectoryDto: UpdateDirectoryDto) {
+    try {
+      const directory = await this.prismaService.directory.update({
+        where: {
+          id,
+        },
+        data: updateDirectoryDto,
+      });
 
-  //TODO: FINISH THE UPDATE METHOD (THE USER WILL JUST BE ABLE TO EDIT THE DIRECTORY NAME FIELD)
-  // public async update(id: string, updateDirectoryDto: UpdateDirectoryDto) {
-
-  // };
+      return {
+        ok: true,
+        directory,
+      };
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException(`Directory with id ${id} not found`);
+      };
+    };
+  };
 
   public async delete(id: string) {
-    const directory = await this.prismaService.user.delete({
-      where: {
-        id,
-      },
-    });
+    try {
+      const directory = await this.prismaService.user.delete({
+        where: {
+          id,
+        },
+      });
 
-    return {
-      ok: true,
-      message: 'Directory deleted successfully',
-      directory
+      return {
+        ok: true,
+        message: 'Directory deleted successfully',
+        directory
+      };
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException(`Directory with id ${id} not found`);
+      };
     };
   }
 }

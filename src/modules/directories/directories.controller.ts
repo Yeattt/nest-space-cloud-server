@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 
 import { DirectoriesService } from './directories.service';
-import { CreateDirectoryDto } from './dto';
+import { CreateDirectoryDto, UpdateDirectoryDto } from './dto';
 import { PaginationDto } from '../../common';
 
 @Controller('directories')
@@ -16,6 +16,14 @@ export class DirectoriesController {
   ) {
     return this.directoriesService.create(createDirectoryDto);
   };
+
+  @Patch('id')
+  public update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateDirectoryDto: UpdateDirectoryDto,
+  ) {
+    return this.directoriesService.update(id, updateDirectoryDto);
+  }
 
   @Get()
   public findAll(
