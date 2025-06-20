@@ -16,6 +16,8 @@ datasource db {
 model Directory {
   id        String   @id @default(uuid())
   name      String
+  parentId  String
+  path      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
